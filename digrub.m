@@ -17,24 +17,24 @@ gui_State = struct('gui_Name',       mfilename, ...
 if nargin && ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
 end
-
+ 
 if nargout
     [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
 else
     gui_mainfcn(gui_State, varargin{:});
 end
-
+ 
 function digrub_OpeningFcn(hObject, eventdata, handles, varargin) 
 %%
 handles.output = hObject;
-
+ 
 guidata(hObject, handles);
-
+ 
 global R
 global Log
 global help
 global scramble
-
+ 
 addpath('src','db');
 scramble = '-';
 help = false;
@@ -46,32 +46,32 @@ set(handles.EditScramble,'String','0')
 rubplot(R);
 axis off
 axis square
-
-
+ 
+ 
 function varargout = digrub_OutputFcn(hObject, eventdata, handles) 
 %%
 varargout{1} = handles.output;
-
-
+ 
+ 
 function SaveButton_ClickedCallback(hObject, eventdata, handles)
 %%
 global Log 
 global R
 global scramble
-
+ 
 [fname path] = uiputfile('*.rub');
 if fname==0
     return
 end
 save([path fname],'R','Log','scramble')
-
-
+ 
+ 
 function OpenButton_ClickedCallback(hObject, eventdata, handles)
 %%
 global Log
 global R
 global scramble
-
+ 
 [fname path] = uigetfile('*.rub');
 if fname==0
     return
@@ -122,14 +122,14 @@ set(handles.StaticScramble,'String',scramble)
 set(handles.TextMessage,'String','')
 set(handles.DispInfo,'Value',0)
 set(handles.EditDim,'String',num2str(d))
-
-
+ 
+ 
 function GenBut_Callback(hObject, eventdata, handles)
 %%
 global R
 global Log
 global scramble
-
+ 
 d = str2double(get(handles.EditDim,'String'));
 a = get(handles.RandScramble,'Value');
 set(handles.TextMessage,'String','')
@@ -185,7 +185,7 @@ else
     end
     s = readsequence(s);
 end
-
+ 
 anim = get(handles.CheckAnim,'Value');
 [R,scramble] = rubgen(d,s,'Animate',anim);
 if ~isempty(scramble{1})
@@ -218,13 +218,13 @@ if dispscram
     end
 end
 rubplot(R);
-
+ 
 Log = {};
 set(handles.StaticLog,'String','-')
 set(handles.Radio1,'Value',1)
 set(handles.Radio2,'Value',0)
 set(handles.EditMove,'String','')
-
+ 
 list = cell(d,1);
 for i = 1:d
     list{i} = num2str(i);
@@ -233,8 +233,8 @@ if d==3
     list = {'1','3'};
 end
 set(handles.popuprow,'String',list,'Value',1)
-
-
+ 
+ 
 function EditDim_Callback(hObject, eventdata, handles)
 %%
 d = str2double(get(handles.EditDim,'String'));
@@ -247,14 +247,14 @@ elseif d > 5 && get(handles.CheckAnim,'Value') && get(handles.RandScramble)
     set(handles.CheckAnim,'Value',0)
     set(handles.CheckRot,'Value',0)
 end
-
-
+ 
+ 
 function PermOrBut_Callback(hObject, eventdata, handles)
 %%
 global R
 global scramble
 global Log
-
+ 
 Rbackup = R;
 d = size(R,1);
 if d~=3 
@@ -274,12 +274,12 @@ if d~=3
             return
     end
 end    
-
+ 
 prompt = {'Corner-Permutation:';...
           'Corner-Orientations:';...
           'Edge-Permutation:';...
           'Edge-Orientations:'};
-
+ 
 done = false;
 while ~done     
     C = GetCorners(R);
@@ -341,7 +341,7 @@ while ~done
 end
 scramble = 'Unknown';
 Log = {};
-
+ 
 set(handles.StaticLog,'String','No log available yet')
 set(handles.StaticScramble,'String','Unknown')
 set(handles.EditDim,'String','3')
@@ -349,9 +349,9 @@ set(handles.EditScramble,'String','')
 set(handles.TextMessage,'String','')
 set(handles.DispInfo,'Value',0)
 rubplot(R)
-
-
-
+ 
+ 
+ 
 function EditDim_CreateFcn(hObject, eventdata, handles)
 %%
 if ispc
@@ -359,8 +359,8 @@ if ispc
 else
     set(hObject,'BackgroundColor',get(0,'defaultUicontrolBackgroundColor'));
 end
-
-
+ 
+ 
 function EditScramble_Callback(hObject, eventdata, handles)
 %%
 n = str2double(get(handles.EditScramble,'String'));
@@ -373,8 +373,8 @@ elseif n > 20 && get(handles.CheckAnim,'Value')
 end
 set(handles.RandScramble,'Value',1)
 set(handles.PreScramble,'Value',0)
-
-
+ 
+ 
 function EditScramble_CreateFcn(hObject, eventdata, handles)
 %%
 if ispc
@@ -382,27 +382,27 @@ if ispc
 else
     set(hObject,'BackgroundColor',get(0,'defaultUicontrolBackgroundColor'));
 end
-
-
+ 
+ 
 function CheckAnim_Callback(hObject, eventdata, handles)
 %%
 anim = get(handles.CheckAnim,'Value');
 d = str2double(get(handles.EditDim,'String'));
 s = str2double(get(handles.EditScramble,'String'));
-
+ 
 if isempty(d)
     d = 0;
 end
 if isempty(s)
     s = 0;
 end
-
+ 
 if (anim==1 && (d>5 || s>20)) && get(handles.RandScramble,'Value')
     errordlg('For animation, set Dimension<=5 and number of scramble moves<=20.')
     set(handles.CheckAnim,'Value',0)
 end
-
-
+ 
+ 
 function ToggleRotate_Callback(hObject, eventdata, handles)
 %%
 func = get(handles.ToggleRotate,'String');
@@ -413,20 +413,20 @@ switch func
         uiresume
         return
 end
-
-
+ 
+ 
 function EditState_Callback(hObject, eventdata, handles)
 %%
 global R
 global Rbackup
 global scramble
-
+ 
 d = size(R,1);
 if d~=2 && d~=3 && d~=4
     errordlg('This feature is only available for dimension=2,3,4.')
     return
 end
-
+ 
 ui = questdlg(...
 'Warning: Editing the state might result in an impossible, thus insolvable, state. Continue?',...
 'Continue?','Yes','No','Yes');
@@ -481,7 +481,7 @@ end
 d = size(R,1);
 movelist = cell(d,1);
 for i = 1:d
-
+ 
     movelist{i} = num2str(i);
 end
 switch d
@@ -511,30 +511,30 @@ else
     set(handles.ubutton,'ForegroundColor',[0 0 0]);
     set(handles.dbutton,'ForegroundColor',[0 0 0]);
 end
-
+ 
 set(handles.popuprow,'Value',1,'String',movelist)
 set(handles.TextMessage,'String','');
 set(handles.StaticLog,'String','-')
 set(handles.EditDim,'String',num2str(d))
 set(handles.MethodMenu,'Value',1)
 set(handles.MethodMenu,'String',options)
-
-
+ 
+ 
 function PushButton(button, handles)
 %%
 global R
 global Log
-
+ 
 d = size(R,1);
-
+ 
 if any('fblrud'==button) && d<4
     return
 end
-
+ 
 a = get(handles.CheckRot,'Value');
 x = get(handles.ccbutton,'Value');
 y = get(handles.doublebutton,'Value');
-
+ 
 move = button;
 if x
     move = [move ''''];
@@ -559,7 +559,7 @@ else
     temp = '-';
 end
 set(handles.StaticLog,'String',temp)
-
+ 
         
 %% MOVE-BUTTONS
 function Fbutton_Callback(hObject, eventdata, handles)
@@ -598,8 +598,8 @@ PushButton('u',handles);
 function dbutton_Callback(hObject, eventdata, handles)
 %%
 PushButton('d',handles);
-
-
+ 
+ 
 function doublebutton_Callback(hObject, eventdata, handles)
 %%
 a = get(handles.doublebutton,'Value');
@@ -607,8 +607,8 @@ b = get(handles.ccbutton,'Value');
 if a && b
     set(handles.ccbutton,'Value',0);
 end
-
-
+ 
+ 
 function ccbutton_Callback(hObject, eventdata, handles)
 %%
 a = get(handles.doublebutton,'Value');
@@ -616,14 +616,14 @@ b = get(handles.ccbutton,'Value');
 if a && b
     set(handles.doublebutton,'Value',0);
 end
-
-
+ 
+ 
 function popupdir_Callback(hObject, eventdata, handles)
 %%
 set(handles.Radio1,'Value',1)
 set(handles.Radio2,'Value',0)
-
-
+ 
+ 
 function popupdir_CreateFcn(hObject, eventdata, handles)
 %%
 if ispc
@@ -631,14 +631,14 @@ if ispc
 else
     set(hObject,'BackgroundColor',get(0,'defaultUicontrolBackgroundColor'));
 end
-
-
+ 
+ 
 function popuprow_Callback(hObject, eventdata, handles)
 %%
 set(handles.Radio1,'Value',1)
 set(handles.Radio2,'Value',0)
-
-
+ 
+ 
 function popuprow_CreateFcn(hObject, eventdata, handles)
 %%
 if ispc
@@ -646,14 +646,14 @@ if ispc
 else
     set(hObject,'BackgroundColor',get(0,'defaultUicontrolBackgroundColor'));
 end
-
-
+ 
+ 
 function popupnum_Callback(hObject, eventdata, handles)
 %%
 set(handles.Radio1,'Value',1)
 set(handles.Radio2,'Value',0)
-
-
+ 
+ 
 function popupnum_CreateFcn(hObject, eventdata, handles)
 %%
 if ispc
@@ -661,19 +661,19 @@ if ispc
 else
     set(hObject,'BackgroundColor',get(0,'defaultUicontrolBackgroundColor'));
 end
-
-
+ 
+ 
 function RotBut_Callback(hObject, eventdata, handles)
 %%
 global R
 global Log
-
+ 
 a = get(handles.Radio1,'Value');
 set(handles.TextMessage,'String','')
 set(handles.DispInfo,'Value',0)
 anim = get(handles.CheckRot,'Value');
 d = size(R,1);
-
+ 
 if a==1
     dir = get(handles.popupdir,'Value')+119;
     row = str2double(get(handles.popuprow,'String'));
@@ -701,12 +701,12 @@ else
         end
     end
 end
-
+ 
 R = rubrot(R,move,'animate',anim);
 if ~anim
     rubplot(R);
 end
-
+ 
 if d<5
     move = move2rub(move,d);
 end
@@ -727,13 +727,13 @@ else
     temp = '-';
 end
 set(handles.StaticLog,'String',temp)
-
-
+ 
+ 
 function UndoButton_Callback(hObject, eventdata, handles)
 %%
 global R
 global Log
-
+ 
 d = size(R,1);
 anim = get(handles.CheckRot,'Value');
 set(handles.DispInfo,'Value',0)
@@ -771,57 +771,57 @@ if ~isempty(Log)
 else
     set(handles.StaticLog,'String','-')
 end
-
-
+ 
+ 
 function CheckRot_Callback(hObject, eventdata, handles)
 %%
 d = str2double(get(handles.EditDim,'String'));
 if isempty(d)
     d = 0;
 end
-
+ 
 if get(handles.CheckRot,'Value') && d>5
     errordlg('Animation only if Dimension<=5')
     set(handles.CheckRot,'Value',0)
 end
-
-
-
+ 
+ 
+ 
 function OrientBut_Callback(hObject, eventdata, handles)
 %%
 global R
-
+ 
 anim = get(handles.CheckRot,'Value');
 R = ruborient(R,'default','Animate',anim);
 set(handles.DispInfo,'Value',0)
-
-
+ 
+ 
 function RandScramble_Callback(hObject, eventdata, handles)
 %%
 a = get(handles.PreScramble,'Value');
 set(handles.PreScramble,'Value',~a)
-
-
-
+ 
+ 
+ 
 function PreScramble_Callback(hObject, eventdata, handles)
 %%
 a = get(handles.RandScramble,'Value');
 set(handles.RandScramble,'Value',~a)
-
-
+ 
+ 
 function EditTextScramble_Callback(hObject, eventdata, handles)
 %%
 set(handles.RandScramble,'Value',0)
 set(handles.PreScramble,'Value',1)
-
-
+ 
+ 
 function EditTextScramble_CreateFcn(hObject, eventdata, handles)
 %%
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
+ 
+ 
 function EditMove_Callback(hObject, eventdata, handles)
 %%
 test = get(handles.EditMove,'String');
@@ -831,38 +831,38 @@ else
     set(handles.Radio1,'Value',0)
     set(handles.Radio2,'Value',1)
 end
-
-
+ 
+ 
 function EditMove_CreateFcn(hObject, eventdata, handles)
 %%
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
+ 
+ 
 function Radio1_Callback(hObject, eventdata, handles)
 %%
 a = get(handles.Radio2,'Value');
 set(handles.Radio2,'Value',~a)
-
-
+ 
+ 
 function Radio2_Callback(hObject, eventdata, handles)
 %%
 a = get(handles.Radio1,'Value');
 set(handles.Radio1,'Value',~a)
-
-
+ 
+ 
 function ClearBut_Callback(hObject, eventdata, handles)
 %%
 global R
 global Log
 global help
 global scramble
-
+ 
 scramble = '-';
 help = false;
 list = {'1','3'};
-
+ 
 Log = {};
 set(handles.RandScramble,'Value',1)
 set(handles.PreScramble,'Value',0)
@@ -893,14 +893,18 @@ set(handles.ubutton,'ForegroundColor',[130 130 130]/255);
 set(handles.dbutton,'ForegroundColor',[130 130 130]/255);
 R = rubgen(3,0);
 rubplot(R)
-
-
+ 
+function mypreview_fcn(obj, event, himage)
+    rotImg = rot90(event.Data);
+    set(himage, 'cdata', rotImg);
+end
+ 
 function WebcamButton_Callback(hObject, eventdata, handles)
 %%
 global R 
 global scramble
 global Log
-
+ 
 try
     info = imaqhwinfo;
 catch 
@@ -914,6 +918,7 @@ for i = 1:numel(x)
         vid = videoinput(adaptor{i}, 1); %#ok<TNMLP>
         x(i) = 1;
         delete(vid);
+        clear vid;
     catch
         continue
     end
@@ -923,7 +928,7 @@ if nnz(x)==0
     set(handles.ToggleRotate,'String','3D-view')
     return
 end
-
+ 
 if strcmp(get(gcf,'Name'),'Rubik')
     DefCam = get(gca,'CameraPosition');
     DefView = get(gca,'View');
@@ -935,7 +940,7 @@ Rbackup = R;
 set(handles.ToggleRotate,'String','Capture','Style','pushbutton');
 set(handles.DispInfo,'Value',0)
 adaptor = adaptor{find(x,1)};
-
+ 
 q = 0.5;
 succes = false;
 col = zeros(6,3);
@@ -949,18 +954,19 @@ for side = 1:6
         vidRes = get(vid, 'VideoResolution');
         nBands = get(vid, 'NumberOfBands');
         hImage = image( zeros(vidRes(2), vidRes(1), nBands) );
-        preview(vid,hImage)
+        setappdata(vid,'UpdatePreviewWindowFcn',@mypreview_fcn);
+        %preview(vid,hImage)
         message = {'White = Up';sprintf('Click ''Capture'' button to capture side: %s (%s)',facecol{side},face(side))};
         set(handles.TextMessage,'String',message);
         uiwait
         img = getsnapshot(vid);
         delete(vid)
-	clear vid
-
+        clear vid;
+ 
         %Find Cube in picture by finding horizontal/vertical edges in 'ed'
         try
             ed = edge(rgb2gray(img));
-
+ 
             x = zeros(size(ed,1),1);
             for i=1:numel(x)
                 x(i) = nnz(ed(i,:)); 
@@ -969,7 +975,7 @@ for side = 1:6
             for i=1:numel(y)
                 y(i) = nnz(ed(:,i)); 
             end
-
+ 
             xpeeks = findpeeks(x);
             ypeeks = findpeeks(y);
             highx  = sort(xpeeks(1,:),'descend');
@@ -984,7 +990,7 @@ for side = 1:6
             end
             posx = sort(posx);
             posy = sort(posy);
-
+ 
             img = img(posx(1):posx(4),posy(1):posy(4),:);
             s = size(img);
             
@@ -1022,7 +1028,7 @@ for side = 1:6
     R{side} = img;
     succes = false;
 end
-
+ 
 for side = 1:6
     s = size(R{side},1);
     x = round(1:(s-1)/3:s);
@@ -1035,7 +1041,7 @@ for side = 1:6
     R3 = double(R0(:,:,3))/255;
     col(side,:) = median([R1(:) R2(:) R3(:)]);
 end
-
+ 
 r = cell(6,1);
 for side = 1:6
     s = size(R{side},1);
@@ -1060,10 +1066,10 @@ for side = 1:6
     end
     r{side}(2,2) = side;
 end
-
+ 
 R = cat(3,r{1},r{2},r{3},r{4},r{5},r{6});
 done = false;
-
+ 
 while ~done
     valid = rubcheck(R);
     if ~valid
@@ -1097,17 +1103,17 @@ else
     set(gca,'CameraPosition',DefCam,'View',DefView);
     rubplot(R);
 end
-
-
+ 
+ 
 function ManualButton_Callback(hObject, eventdata, handles)
 %%
 global R
 global scramble
-
+ 
 Rbackup = R;
 done = false;
 retry = false;
-
+ 
 while ~done
     if retry
         R = editstate(R);
@@ -1185,19 +1191,19 @@ else
     set(handles.ubutton,'ForegroundColor',[0 0 0]);
     set(handles.dbutton,'ForegroundColor',[0 0 0]);
 end
-
+ 
 set(handles.popuprow,'String',movelist,'Value',1)
 set(handles.TextMessage,'String','');
 set(handles.StaticLog,'String','-')
 set(handles.EditDim,'String',num2str(d))
 set(handles.MethodMenu,'Value',1,'String',options)
 set(handles.StaticScramble,'String',scramble)
-
-
+ 
+ 
 function CheckScramble_Callback(hObject, eventdata, handles)
 %%
 global scramble
-
+ 
 x = get(handles.CheckScramble,'Value');
 if x
     set(handles.StaticScramble,'String',scramble);
@@ -1205,14 +1211,14 @@ else
     set(handles.StaticScramble,'String','Scramble hidden, check the box to display current scramble')
 end
     
-
-
+ 
+ 
 function SolveButton_Callback(hObject, eventdata, handles)
 %%
 global R
 global Log
 global scramble
-
+ 
 R0 = R;
 d = size(R,1);
 a = get(handles.AnimSol,'Value');
@@ -1262,9 +1268,9 @@ switch method
         message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
                    sprintf('Number of moves: %d',nmoves)};
         set(handles.TextMessage,'String',{'Solved!';message{1};message{2}})
-	if a
+    if a
             rubplot(R0,solution);
-	end
+    end
         solution = move2rub(solution);
     case 'God''s Algorithm'
         tic
@@ -1294,7 +1300,7 @@ switch method
         s = scramble;
         s(s==' ') = [];
         s = readsequence(s);
-
+ 
         if ~isempty(Log)
             ui = questdlg(['You already performed moves, you have to undo '... 
                            'these before the inverse scramble can be applied.'],...
@@ -1329,7 +1335,7 @@ switch method
             solution = move2rub(solution,d);
         end
 end
-
+ 
 rubplot(R)
 ui = questdlg('Do you want to view the solution algorithm?','View solution','Yes','No','Yes');
 if strcmp(ui,'Yes')
@@ -1398,8 +1404,8 @@ if strcmp(ui,'Yes')
     fclose(fid);
     open(fname)
 end
-
-
+ 
+ 
 function AnimSol_Callback(hObject, eventdata, handles)
 %%
 a = get(handles.AnimSol,'Value');
@@ -1409,12 +1415,12 @@ if a && d>5
     a = false;
 end
 set(handles.AnimSol,'Value',a)
-
-
+ 
+ 
 function MethodMenu_Callback(hObject, eventdata, handles)
 %%
 global scramble
-
+ 
 a = get(handles.MethodMenu,'Value');
 method = get(handles.MethodMenu,'String');
 if iscell(method)
@@ -1425,19 +1431,19 @@ if strcmp(method,'Inverse Scramble') && strcmp(scramble,'Unknown')
     set(handles.MethodMenu,'Value',1)
     return
 end
-
-
+ 
+ 
 function MethodMenu_CreateFcn(hObject, eventdata, handles)
 %%
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
+ 
+ 
 function DispInfo_Callback(hObject, eventdata, handles)
 %%
 global h %#ok<NUSED>
-
+ 
 a = get(handles.DispInfo,'Value');
 d = str2double(get(handles.EditDim,'String'));
 if ~a
@@ -1475,14 +1481,15 @@ else
         end
     end
 end
-
-
+ 
+ 
 function about_ClickedCallback(hObject, eventdata, handles)
-
+ 
 msgbox({'Thanks for downloading!';'Created by Joren Heit';'jorenheit@gmail.com';...
         '';'I would like to thank Herbert Kociemba, Jaap Scherphuis and Morwen Thistlethwaite himself for being of great help to this project!';...
            'Please also visit their websites:';...
            'www.jaapsch.net';'www.kociemba.org';...
            'www.math.utk.edu/~morwen/'},'About','none')
        
+ 
 
