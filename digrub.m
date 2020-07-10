@@ -955,6 +955,7 @@ for side = 1:6
         uiwait
         img = getsnapshot(vid);
         delete(vid)
+	clear vid
 
         %Find Cube in picture by finding horizontal/vertical edges in 'ed'
         try
