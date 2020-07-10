@@ -897,7 +897,6 @@ rubplot(R)
 function mypreview_fcn(obj, event, himage)
     rotImg = rot90(event.Data);
     set(himage, 'cdata', rotImg);
-end
  
 function WebcamButton_Callback(hObject, eventdata, handles)
 %%
