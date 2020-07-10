@@ -897,7 +897,6 @@ rubplot(R)
 function mypreview_fcn(obj, event, himage)
     rotImg = rot90(event.Data);
     set(himage, 'cdata', rotImg);
-end
  
 function WebcamButton_Callback(hObject, eventdata, handles)
 %%
@@ -954,8 +953,9 @@ for side = 1:6
         vidRes = get(vid, 'VideoResolution');
         nBands = get(vid, 'NumberOfBands');
         hImage = image( zeros(vidRes(2), vidRes(1), nBands) );
-        setappdata(vid,'UpdatePreviewWindowFcn',@mypreview_fcn);
-        %preview(vid,hImage)
+        hImage.Parent.XDir = 'reverse';
+        %setappdata(vid,'UpdatePreviewWindowFcn',@mypreview_fcn);
+        preview(vid,hImage)
         message = {'White = Up';sprintf('Click ''Capture'' button to capture side: %s (%s)',facecol{side},face(side))};
         set(handles.TextMessage,'String',message);
         uiwait
