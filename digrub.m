@@ -910,23 +910,23 @@ catch
     errordlg('Webcam aquisition not supported.')
     return
 end
-adaptor = info.InstalledAdaptors;
-x = zeros(1,numel(adaptor));
-for i = 1:numel(x)
-    try 
-        vid = videoinput(adaptor{i}, 1); %#ok<TNMLP>
-        x(i) = 1;
-        delete(vid);
-        clear vid;
-    catch
-        continue
-    end
-end
-if nnz(x)==0
-    errordlg('No video input device found');
-    set(handles.ToggleRotate,'String','3D-view')
-    return
-end
+% adaptor = info.InstalledAdaptors;
+% x = zeros(1,numel(adaptor));
+% for i = 1:numel(x)
+%     try 
+%         vid = videoinput(adaptor{i}, 1); %#ok<TNMLP>
+%         x(i) = 1;
+%         delete(vid);
+%         clear vid;
+%     catch
+%         continue
+%     end
+% end
+% if nnz(x)==0
+%     errordlg('No video input device found');
+%     set(handles.ToggleRotate,'String','3D-view')
+%     return
+% end
  
 if strcmp(get(gcf,'Name'),'Rubik')
     DefCam = get(gca,'CameraPosition');
@@ -938,8 +938,10 @@ end
 Rbackup = R;
 set(handles.ToggleRotate,'String','Capture','Style','pushbutton');
 set(handles.DispInfo,'Value',0)
-adaptor = adaptor{find(x,1)};
- 
+% adaptor = adaptor{find(x,1)};
+vid = webcam(1);
+preview(vid);
+
 q = 0.5;
 succes = false;
 col = zeros(6,3);
@@ -949,19 +951,20 @@ facecol = {'Red','Blue','Orange','Green','White','Yellow'};
 for side = 1:6
     while ~succes
         %%CAPTURE PICTURE FROM WEBCAM
-        vid = videoinput(adaptor, 1); %#ok<TNMLP>
-        vidRes = get(vid, 'VideoResolution');
-        nBands = get(vid, 'NumberOfBands');
-        hImage = image( zeros(vidRes(2), vidRes(1), nBands) );
-        hImage.Parent.XDir = 'reverse';
+%         vid = videoinput(adaptor, 1); %#ok<TNMLP>
+%         vidRes = get(vid, 'VideoResolution');
+%         nBands = get(vid, 'NumberOfBands');
+%         hImage = image( zeros(vidRes(2), vidRes(1), nBands) );
+%         hImage.Parent.XDir = 'reverse';
         %setappdata(vid,'UpdatePreviewWindowFcn',@mypreview_fcn);
-        preview(vid,hImage)
+%         preview(vid,hImage)
         message = {'White = Up';sprintf('Click ''Capture'' button to capture side: %s (%s)',facecol{side},face(side))};
         set(handles.TextMessage,'String',message);
         uiwait
-        img = getsnapshot(vid);
-        delete(vid)
-        clear vid;
+%         img = getsnapshot(vid);
+%         delete(vid)
+%         clear vid;
+        img = snapshot(vid);
  
         %Find Cube in picture by finding horizontal/vertical edges in 'ed'
         try
@@ -1028,7 +1031,10 @@ for side = 1:6
     R{side} = img;
     succes = false;
 end
- 
+
+closePreview(vid);
+clear vid;
+
 for side = 1:6
     s = size(R{side},1);
     x = round(1:(s-1)/3:s);
@@ -1066,8 +1072,30 @@ for side = 1:6
     end
     r{side}(2,2) = side;
 end
- 
+
 R = cat(3,r{1},r{2},r{3},r{4},r{5},r{6});
+
+
+% HERE IS THE MAPPING:
+% Red = 1 = U
+% Blue = 2 = D
+% Orange = 3 = L
+% Green = 4 = R
+% White = 5 = F
+% Yellow = 6 = B
+
+converted_R = string(R);
+converted_R(converted_R=='1') = 'U';
+converted_R(converted_R=='2') = 'D';
+converted_R(converted_R=='3') = 'L';
+converted_R(converted_R=='4') = 'R';
+converted_R(converted_R=='5') = 'F';
+converted_R(converted_R=='6') = 'B';
+converted_R =  reshape(permute(converted_R,[2 1 3]),1,[]);
+
+%%% RETURN converted_R
+
+
 done = false;
  
 while ~done
