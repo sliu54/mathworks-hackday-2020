@@ -1091,7 +1091,8 @@ converted_R(converted_R=='3') = 'L';
 converted_R(converted_R=='4') = 'R';
 converted_R(converted_R=='5') = 'F';
 converted_R(converted_R=='6') = 'B';
-converted_R =  reshape(permute(converted_R,[2 1 3]),1,[]);
+converted_R = reshape(permute(converted_R,[2 1 3]),1,[]);
+converted_R = join(converted_R);
 
 %%% RETURN converted_R
 
