@@ -40,9 +40,9 @@ scramble = '-';
 help = false;
 Log = {};
 R=rubgen(3,0);
-set(handles.popuprow,'String',{'1','3'})
-set(handles.EditDim,'String','3')
-set(handles.EditScramble,'String','0')
+%set(handles.popuprow,'String',{'1','3'})
+%set(handles.EditDim,'String','3')
+%set(handles.EditScramble,'String','0')
 rubplot(R);
 axis off
 axis square
