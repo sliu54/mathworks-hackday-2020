@@ -940,7 +940,10 @@ set(handles.ToggleRotate,'String','Capture','Style','pushbutton');
 set(handles.DispInfo,'Value',0)
 % adaptor = adaptor{find(x,1)};
 vid = webcam(1);
-preview(vid);
+%hImage = image(zeros(size(snapshot(vid))));
+%hImage.Parent.XDir = 'reverse';
+%preview(vid, hImage)
+catcherror = false;
 
 q = 0.5;
 succes = false;
@@ -957,10 +960,14 @@ for side = 1:6
 %         hImage = image( zeros(vidRes(2), vidRes(1), nBands) );
 %         hImage.Parent.XDir = 'reverse';
         %setappdata(vid,'UpdatePreviewWindowFcn',@mypreview_fcn);
-%         preview(vid,hImage)
+        hImage = image(zeros(size(snapshot(vid))));
+        hImage.Parent.XDir = 'reverse';
+        preview(vid, hImage)
         message = {'White = Up';sprintf('Click ''Capture'' button to capture side: %s (%s)',facecol{side},face(side))};
         set(handles.TextMessage,'String',message);
-        uiwait
+        if ~catcherror
+            uiwait
+        end
 %         img = getsnapshot(vid);
 %         delete(vid)
 %         clear vid;
@@ -1010,7 +1017,7 @@ for side = 1:6
                 img = img(1:min(s(1:2)),1:min(s(1:2)),:);
             end
             
-            image(img); axis off square
+            hImage = image(img); axis off square
             cont = false;
             while ~cont
                 ui = questdlg('Is this correct?','Confirm','Yes','No','Yes');
@@ -1022,7 +1029,9 @@ for side = 1:6
                         succes = false;
                 end
             end
+            catcherror = false;
         catch
+            catcherror = true;
             message = 'Failed capturing cube image, please try again';
             set(handles.TextMessage,'String',message)
             pause(1)
