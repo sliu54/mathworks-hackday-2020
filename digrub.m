@@ -7,6 +7,11 @@ function varargout = digrub(varargin)
 %#ok<*AGROW>
 %#ok<*CTCH>
  
+% global pausetime 
+global pauseTime
+pauseTime = 0.9;
+
+
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
@@ -1294,12 +1299,12 @@ switch method
     case 'Thistlethwaite 45'
         tic
         solution = Solve45(R);
-        time = toc;
+        %time = toc;
         solution = rubopt(solution);
         nmoves = numel(solution);
-        message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
-                   sprintf('Number of moves: %d',nmoves)};
-        set(handles.TextMessage,'String',{'Solved!';message{1};message{2}})
+%         message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
+%                    sprintf('Number of moves: %d',nmoves)};
+%         set(handles.TextMessage,'String',{'Solved!';message{1};message{2}})
         R = rubrot(R0,rub2move(solution),'Animate',a);
     case 'Layer by Layer'
         [R,solution,time,nmoves] = rubsolve(R);
@@ -1313,21 +1318,21 @@ switch method
     case 'God''s Algorithm'
         tic
         [rot,solution] = Solve222(R);
-        time = toc;
+        %time = toc;
         nmoves = numel(solution);
-        message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
-                   sprintf('Number of moves: %d',nmoves)};
-        set(handles.TextMessage,'String',{'Solved!';message{1};message{2}})
+%         message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
+%                    sprintf('Number of moves: %d',nmoves)};
+%         set(handles.TextMessage,'String',{'Solved!';message{1};message{2}})
         solution = algrot(solution,rot);
         R = rubrot(R,solution,'Animate',a);
     case '423T45'
         tic
         solution = Solve444(R);
-        time = toc;
+        %time = toc;
         nmoves = numel(solution);
-        message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
-                   sprintf('Number of moves: %d',nmoves)};
-        set(handles.TextMessage,'String',{'Solved!';message{1};message{2}})
+%         message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
+%                    sprintf('Number of moves: %d',nmoves)};
+%        set(handles.TextMessage,'String',{'Solved!';message{1};message{2}})
         sol2 = rub2move(solution,4);
         R = rubrot(R,sol2,'Animate',a);
     case 'Inverse Scramble'
@@ -1375,6 +1380,14 @@ switch method
 end
  
 rubplot(R)
+
+% adding toc code - so timer stops after animation is done
+time = toc;
+message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
+           sprintf('Number of moves: %d',nmoves)};
+set(handles.TextMessage,'String',{'Solved!';message{1};message{2}})
+
+
 ui = questdlg('Do you want to view the solution algorithm?','View solution','Yes','No','Yes');
 if strcmp(ui,'Yes')
     fname = tempname;
@@ -1541,6 +1554,9 @@ function popupmenu8_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu8 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu8
+    global diff_option;
+    contents = cellstr(get(hObject,'String'));
+    diff_option = contents{get(hObject,'Value')};
 
 
 % --- Executes during object creation, after setting all properties.
@@ -1579,8 +1595,35 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
+
+global pauseTime
+global diff_option
+% difficultySetting = digrubInitializer();
+% if strcmpi(difficultySetting,'E')
+%     pauseTime = 1;
+% elseif strcmpi(difficultySetting,'M')
+%     pauseTime = 0.75;
+% else
+%     pauseTime = 0.5;
+% end
+
 % --- Executes on button press in pushbutton37.
 function pushbutton37_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton37 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+    %difficultySetting = digrubInitializer();
+    global diff_option
+    global pauseTime
+    difficultySetting = diff_option
+    if strcmpi(difficultySetting,'Expert')
+        pauseTime = 0.0001;
+    elseif strcmpi(difficultySetting,'Intermediate')
+        pauseTime = 0.01;
+    else
+        pauseTime = 0.9; % beginner so 0.01 0.5;
+    end
+    pauseTime
+    disp('push button start');
+    SolveButton_Callback(@SolveButton_Callback, eventdata, handles);

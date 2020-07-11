@@ -118,7 +118,20 @@ if nargin == 2 && str2double(move(3))~=0
         axis off
         axis square
         hold off        
-        pause(0.01)
+        % using global time 
+        global pauseTime
+        global diff_option
+        if strcmpi(diff_option,'Expert')
+            pauseTime = 0.0001;
+        elseif strcmpi(diff_option,'Intermediate')
+            pauseTime = 0.01;
+        else
+            pauseTime = 0.9; % beginner so 0.01 0.5;
+        end
+        
+        %pauseTime 
+        diff_option
+        pause(pauseTime) %0.01
     end    
     if nargout == 1
         varargout{1} = rubrot(Rbackup,move);
