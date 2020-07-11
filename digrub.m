@@ -978,9 +978,10 @@ for side = 1:6
         %Find Cube in picture by finding horizontal/vertical edges in 'ed'
         try
             N = str2double(handles.EditDim.String);
-            cubeimg = find_cube(img, N);
+            img = find_cube(img, N);
             
-            hImage = image(cubeimg); axis off square
+            hImage = image(img); axis off square
+            hImage.Parent.XDir = 'reverse';
             cont = false;
             while ~cont
                 ui = questdlg('Is this correct?','Confirm','Yes','No','Yes');
@@ -1007,43 +1008,87 @@ end
 closePreview(vid);
 clear vid;
 
+grids = cell(N,N,6);
 for side = 1:6
-    s = size(R{side},1);
-    x = round(1:(s-1)/3:s);
-    R0 = R{side}(x(2):x(3),x(2):x(3),:);
-    l = size(R0,1);
-    a = round(l/2*(1-sqrt(q)));
-    R0 = R0(a:end-a,a:end-a,:);
-    R1 = double(R0(:,:,1))/255;
-    R2 = double(R0(:,:,2))/255;
-    R3 = double(R0(:,:,3))/255;
-    col(side,:) = median([R1(:) R2(:) R3(:)]);
-end
- 
-r = cell(6,1);
-for side = 1:6
-    s = size(R{side},1);
-    x = round(1:(s-1)/3:s);
-    for i=1:3
-        for j=1:3
-            R0 = R{side}(x(i):x(i+1),x(j):x(j+1),:);
-            l = size(R0,1);
-            a = round(l/2*(1-sqrt(q)));
-            R0 = R0(a:end-a,a:end-a,:);
-            R1 = double(R0(:,:,1))/255;
-            R2 = double(R0(:,:,2))/255;
-            R3 = double(R0(:,:,3))/255;
-            for k=1:6
-                temp = [abs(R1(:)-col(k,1)),...
-                        abs(R2(:)-col(k,2)),...
-                        abs(R3(:)-col(k,3))];
-                D(k) = median(sqrt(sum(temp.^2,2)));
-            end
-            r{side}(i,j) = find(D==min(D));
+    sz = size(R{side});
+    rowidx = round(linspace(1, sz(1), N+1));
+    colidx = round(linspace(1, sz(2), N+1));
+    for i = 1:N
+        for j = 1:N
+            crop = R{side}(rowidx(i):rowidx(i+1), colidx(j):colidx(j+1), :);
+            grids{i,j,side} = squeeze(mean(mean(crop,1),2));
         end
     end
-    r{side}(2,2) = side;
 end
+% each row of colors will be a dominant color
+[colorsidx, colors] = kmeans([grids{:}]', 6);
+% find best matching netween colors and RBOGWY
+map =   [255   0   0;...          %red
+           0   0 255;...          %blue    
+         255 165   0;...          %orange  
+           0 255   0;...          %green
+         255 255 255;...          %white
+         255 255   0];            %yellow
+allperms = perms(1:6);
+mindiff = inf;
+for p = 1:size(allperms,1)
+    perm = allperms(i,:);
+    absdiff = abs(colors(perm,:) - map);
+    diff = mean(absdiff(:));
+    if diff < mindiff
+        mindiff = diff;
+        minperm = perm;
+    end
+end
+colors2map(minperm) = 1:6;
+
+r = cell(1,6);
+for side = 1:6
+    r{side} = zeros(N,N);
+    for i = 1:N
+        for j = 1:N
+            r{side}(i,j) = colors2map(colorsidx(sub2ind([N,N,6], i, j, side)));
+        end
+    end
+end
+
+% for side = 1:6
+%     s = size(R{side},1);
+%     x = round(1:(s-1)/3:s);
+%     R0 = R{side}(x(2):x(3),x(2):x(3),:);
+%     l = size(R0,1);
+%     a = round(l/2*(1-sqrt(q)));
+%     R0 = R0(a:end-a,a:end-a,:);
+%     R1 = double(R0(:,:,1))/255;
+%     R2 = double(R0(:,:,2))/255;
+%     R3 = double(R0(:,:,3))/255;
+%     col(side,:) = median([R1(:) R2(:) R3(:)]);
+% end
+%  
+% r = cell(6,1);
+% for side = 1:6
+%     s = size(R{side},1);
+%     x = round(1:(s-1)/3:s);
+%     for i=1:3
+%         for j=1:3
+%             R0 = R{side}(x(i):x(i+1),x(j):x(j+1),:);
+%             l = size(R0,1);
+%             a = round(l/2*(1-sqrt(q)));
+%             R0 = R0(a:end-a,a:end-a,:);
+%             R1 = double(R0(:,:,1))/255;
+%             R2 = double(R0(:,:,2))/255;
+%             R3 = double(R0(:,:,3))/255;
+%             for k=1:6
+%                 temp = [abs(R1(:)-col(k,1)),...
+%                         abs(R2(:)-col(k,2)),...
+%                         abs(R3(:)-col(k,3))];
+%                 D(k) = median(sqrt(sum(temp.^2,2)));
+%             end
+%             r{side}(i,j) = find(D==min(D));
+%         end
+%     end
+%     r{side}(2,2) = side;
+% end
 
 R = cat(3,r{1},r{2},r{3},r{4},r{5},r{6});
 
