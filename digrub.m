@@ -973,56 +973,14 @@ for side = 1:6
         if ~catcherror
             uiwait
         end
-%         img = getsnapshot(vid);
-%         delete(vid)
-%         clear vid;
         img = snapshot(vid);
  
         %Find Cube in picture by finding horizontal/vertical edges in 'ed'
         try
-            ed = edge(rgb2gray(img));
- 
-            x = zeros(size(ed,1),1);
-            for i=1:numel(x)
-                x(i) = nnz(ed(i,:)); 
-            end
-            y = zeros(size(ed,2),1);
-            for i=1:numel(y)
-                y(i) = nnz(ed(:,i)); 
-            end
- 
-            xpeeks = findpeeks(x);
-            ypeeks = findpeeks(y);
-            highx  = sort(xpeeks(1,:),'descend');
-            highy  = sort(ypeeks(1,:),'descend');
-            highx  = highx(1:4);
-            highy  = highy(1:4);
-            for i=1:4
-                posx(i) = xpeeks(2,find(xpeeks(1,:)==highx(i),1));
-                posy(i) = ypeeks(2,find(ypeeks(1,:)==highy(i),1));
-                xpeeks(:,xpeeks(1,:)==highx(i)) = [];
-                ypeeks(:,ypeeks(1,:)==highy(i)) = [];
-            end
-            posx = sort(posx);
-            posy = sort(posy);
- 
-            img = img(posx(1):posx(4),posy(1):posy(4),:);
-            s = size(img);
+            N = str2double(handles.EditDim.String);
+            cubeimg = find_cube(img, N);
             
-            %centre the cube image in a square
-            if s(1)~=s(2)
-                dif = abs(s(1)-s(2));
-                cut = ceil(dif/2);
-                if s(2)<s(1)
-                    img = img(cut:end-cut,:,:);
-                else
-                    img = img(:,cut:end-cut,:);
-                end
-                s = size(img);
-                img = img(1:min(s(1:2)),1:min(s(1:2)),:);
-            end
-            
-            hImage = image(img); axis off square
+            hImage = image(cubeimg); axis off square
             cont = false;
             while ~cont
                 ui = questdlg('Is this correct?','Confirm','Yes','No','Yes');
