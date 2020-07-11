@@ -9,7 +9,7 @@ function varargout = digrub(varargin)
  
 % global pausetime 
 global pauseTime
-pauseTime = 0.9;
+%pauseTime = 0.9;
 
 
 gui_Singleton = 1;
@@ -1616,14 +1616,21 @@ function pushbutton37_Callback(hObject, eventdata, handles)
     %difficultySetting = digrubInitializer();
     global diff_option
     global pauseTime
-    difficultySetting = diff_option
-    if strcmpi(difficultySetting,'Expert')
-        pauseTime = 0.0001;
-    elseif strcmpi(difficultySetting,'Intermediate')
-        pauseTime = 0.01;
-    else
-        pauseTime = 0.9; % beginner so 0.01 0.5;
-    end
-    pauseTime
-    disp('push button start');
+%     difficultySetting = diff_option
+%     if strcmpi(difficultySetting,'Expert')
+%         pauseTime = 0.0001;
+%     elseif strcmpi(difficultySetting,'Intermediate')
+%         pauseTime = 0.01;
+%     else
+%         pauseTime = 0.9; % beginner so 0.01 0.5;
+%     end
+%     pauseTime
+%     disp('push button start');
     SolveButton_Callback(@SolveButton_Callback, eventdata, handles);
+
+
+% --- Executes on button press in pushbutton38.
+function pushbutton38_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton38 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
