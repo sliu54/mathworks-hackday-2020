@@ -1299,13 +1299,17 @@ switch method
     case 'Thistlethwaite 45'
         tic
         solution = Solve45(R);
-        %time = toc;
+        
         solution = rubopt(solution);
         nmoves = numel(solution);
 %         message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
 %                    sprintf('Number of moves: %d',nmoves)};
 %         set(handles.TextMessage,'String',{'Solved!';message{1};message{2}})
         R = rubrot(R0,rub2move(solution),'Animate',a);
+        time = toc;
+        message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
+                   sprintf('Number of moves: %d',nmoves)};
+        set(handles.TextMessage,'String',{'Solved!';message{1};message{2}})
     case 'Layer by Layer'
         [R,solution,time,nmoves] = rubsolve(R);
         message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
@@ -1320,21 +1324,27 @@ switch method
         [rot,solution] = Solve222(R);
         %time = toc;
         nmoves = numel(solution);
-%         message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
-%                    sprintf('Number of moves: %d',nmoves)};
-%         set(handles.TextMessage,'String',{'Solved!';message{1};message{2}})
+
         solution = algrot(solution,rot);
         R = rubrot(R,solution,'Animate',a);
+        time = toc;
+        message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
+                   sprintf('Number of moves: %d',nmoves)};
+        set(handles.TextMessage,'String',{'Solved!';message{1};message{2}})
+        
     case '423T45'
         tic
         solution = Solve444(R);
         %time = toc;
         nmoves = numel(solution);
-%         message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
-%                    sprintf('Number of moves: %d',nmoves)};
-%        set(handles.TextMessage,'String',{'Solved!';message{1};message{2}})
+
         sol2 = rub2move(solution,4);
         R = rubrot(R,sol2,'Animate',a);
+        time = toc;
+        message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
+                   sprintf('Number of moves: %d',nmoves)};
+       set(handles.TextMessage,'String',{'Solved!';message{1};message{2}})       
+       
     case 'Inverse Scramble'
         if scramble=='-'
             warndlg('Cube wasn''t scrambled. Use ''Undo'' to undo the moves.');
@@ -1382,10 +1392,10 @@ end
 rubplot(R)
 
 % adding toc code - so timer stops after animation is done
-time = toc;
-message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
-           sprintf('Number of moves: %d',nmoves)};
-set(handles.TextMessage,'String',{'Solved!';message{1};message{2}})
+% time = toc;
+% message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
+%            sprintf('Number of moves: %d',nmoves)};
+% set(handles.TextMessage,'String',{'Solved!';message{1};message{2}})
 
 
 ui = questdlg('Do you want to view the solution algorithm?','View solution','Yes','No','Yes');

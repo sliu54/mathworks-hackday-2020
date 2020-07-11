@@ -126,7 +126,7 @@ if nargin == 2 && str2double(move(3))~=0
         elseif strcmpi(diff_option,'Beginner')
             pauseTime = 0.5;
         else
-            pauseTime = 0.09; % intermediate is default
+            pauseTime = 0.1; % intermediate is default
         end
         
         %pauseTime 
