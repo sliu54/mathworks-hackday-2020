@@ -927,7 +927,9 @@ end
 %     set(handles.ToggleRotate,'String','3D-view')
 %     return
 % end
- 
+
+cubeDim = str2double(get(handles.EditDim,'String'));
+
 if strcmp(get(gcf,'Name'),'Rubik')
     DefCam = get(gca,'CameraPosition');
     DefView = get(gca,'View');
@@ -990,9 +992,9 @@ for side = 1:6
             ypeeks = findpeeks(y);
             highx  = sort(xpeeks(1,:),'descend');
             highy  = sort(ypeeks(1,:),'descend');
-            highx  = highx(1:4);
-            highy  = highy(1:4);
-            for i=1:4
+            highx  = highx(1:cubeDim+1);
+            highy  = highy(1:cubeDim+1);
+            for i=1:cubeDim+1
                 posx(i) = xpeeks(2,find(xpeeks(1,:)==highx(i),1));
                 posy(i) = ypeeks(2,find(ypeeks(1,:)==highy(i),1));
                 xpeeks(:,xpeeks(1,:)==highx(i)) = [];
@@ -1001,7 +1003,7 @@ for side = 1:6
             posx = sort(posx);
             posy = sort(posy);
  
-            img = img(posx(1):posx(4),posy(1):posy(4),:);
+            img = img(posx(1):posx(cubeDim+1),posy(1):posy(cubeDim+1),:);
             s = size(img);
             
             %centre the cube image in a square
@@ -1046,8 +1048,8 @@ clear vid;
 
 for side = 1:6
     s = size(R{side},1);
-    x = round(1:(s-1)/3:s);
-    R0 = R{side}(x(2):x(3),x(2):x(3),:);
+    x = round(1:(s-1)/cubeDim:s);
+    R0 = R{side}(x(ceil(cubeDim/2)):x(ceil(cubeDim/2)+1),x(ceil(cubeDim/2)):x(ceil(cubeDim/2)+1),:);
     l = size(R0,1);
     a = round(l/2*(1-sqrt(q)));
     R0 = R0(a:end-a,a:end-a,:);
@@ -1061,8 +1063,8 @@ r = cell(6,1);
 for side = 1:6
     s = size(R{side},1);
     x = round(1:(s-1)/3:s);
-    for i=1:3
-        for j=1:3
+    for i=1:cubeDim
+        for j=1:cubeDim
             R0 = R{side}(x(i):x(i+1),x(j):x(j+1),:);
             l = size(R0,1);
             a = round(l/2*(1-sqrt(q)));
@@ -1079,7 +1081,7 @@ for side = 1:6
             r{side}(i,j) = find(D==min(D));
         end
     end
-    r{side}(2,2) = side;
+    r{side}(ceil(cubeDim/2),ceil(cubeDim/2)) = side;
 end
 
 R = cat(3,r{1},r{2},r{3},r{4},r{5},r{6});
