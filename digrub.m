@@ -127,8 +127,9 @@ set(handles.StaticScramble,'String',scramble)
 set(handles.TextMessage,'String','')
 set(handles.DispInfo,'Value',0)
 set(handles.EditDim,'String',num2str(d))
- 
- 
+% ADD timer message block 
+set(handles.text38,'String','')
+
 function GenBut_Callback(hObject, eventdata, handles)
 %%
 global R
@@ -138,6 +139,8 @@ global scramble
 d = str2double(get(handles.EditDim,'String'));
 a = get(handles.RandScramble,'Value');
 set(handles.TextMessage,'String','')
+%uservcomputer timer
+set(handles.text38,'String','')
 set(handles.DispInfo,'Value',0)
 if isnan(d)
     errordlg('Please enter the dimension!')
@@ -1618,6 +1621,7 @@ global diff_option
 % end
 
 % --- Executes on button press in pushbutton37.
+global gametimestart;
 function pushbutton37_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton37 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -1636,8 +1640,25 @@ function pushbutton37_Callback(hObject, eventdata, handles)
 %     end
 %     pauseTime
 %     disp('push button start');
-    SolveButton_Callback(@SolveButton_Callback, eventdata, handles);
 
+    handles = guihandles(hObject);
+    % toggle
+    
+    global gametimestart;
+    if strcmpi(handles.pushbutton37.String,'Start')
+        gametimestart = tic;
+        handles.pushbutton37.String = "Click once Done!";
+        set(handles.text38, 'String',{'in progress ..'});
+        SolveButton_Callback(@SolveButton_Callback, eventdata, handles);
+        
+    else
+        % change back | stop timer
+        handles.pushbutton37.String = "Start";
+        gametimer = toc(gametimestart);
+        %num2str(round(gametimer*100)/100)
+        message = {sprintf('%s seconds',num2str(round(gametimer*100)/100))};
+        set(handles.text38,'String',{message{1}}) ;           
+    end
 
 % --- Executes on button press in pushbutton38.
 function pushbutton38_Callback(hObject, eventdata, handles)

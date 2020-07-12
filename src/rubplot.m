@@ -130,7 +130,7 @@ if nargin == 2 && str2double(move(3))~=0
         end
         
         %pauseTime 
-        diff_option
+        %diff_option
         pause(pauseTime) %0.01
     end    
     if nargout == 1
