@@ -7,6 +7,11 @@ function varargout = digrub(varargin)
 %#ok<*AGROW>
 %#ok<*CTCH>
  
+% global pausetime 
+global pauseTime
+%pauseTime = 0.9;
+
+
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
@@ -41,7 +46,7 @@ help = false;
 Log = {};
 R=rubgen(3,0);
 %set(handles.popuprow,'String',{'1','3'})
-%set(handles.EditDim,'String','3')
+set(handles.EditDim,'String','3')
 %set(handles.EditScramble,'String','0')
 rubplot(R);
 axis off
@@ -122,8 +127,9 @@ set(handles.StaticScramble,'String',scramble)
 set(handles.TextMessage,'String','')
 set(handles.DispInfo,'Value',0)
 set(handles.EditDim,'String',num2str(d))
- 
- 
+% ADD timer message block 
+set(handles.text38,'String','')
+
 function GenBut_Callback(hObject, eventdata, handles)
 %%
 global R
@@ -133,6 +139,8 @@ global scramble
 d = str2double(get(handles.EditDim,'String'));
 a = get(handles.RandScramble,'Value');
 set(handles.TextMessage,'String','')
+%uservcomputer timer
+set(handles.text38,'String','')
 set(handles.DispInfo,'Value',0)
 if isnan(d)
     errordlg('Please enter the dimension!')
@@ -1296,13 +1304,17 @@ switch method
     case 'Thistlethwaite 45'
         tic
         solution = Solve45(R);
-        time = toc;
+        
         solution = rubopt(solution);
         nmoves = numel(solution);
+%         message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
+%                    sprintf('Number of moves: %d',nmoves)};
+%         set(handles.TextMessage,'String',{'Solved!';message{1};message{2}})
+        R = rubrot(R0,rub2move(solution),'Animate',a);
+        time = toc;
         message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
                    sprintf('Number of moves: %d',nmoves)};
         set(handles.TextMessage,'String',{'Solved!';message{1};message{2}})
-        R = rubrot(R0,rub2move(solution),'Animate',a);
     case 'Layer by Layer'
         [R,solution,time,nmoves] = rubsolve(R);
         message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
@@ -1315,23 +1327,29 @@ switch method
     case 'God''s Algorithm'
         tic
         [rot,solution] = Solve222(R);
-        time = toc;
+        %time = toc;
         nmoves = numel(solution);
+
+        solution = algrot(solution,rot);
+        R = rubrot(R,solution,'Animate',a);
+        time = toc;
         message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
                    sprintf('Number of moves: %d',nmoves)};
         set(handles.TextMessage,'String',{'Solved!';message{1};message{2}})
-        solution = algrot(solution,rot);
-        R = rubrot(R,solution,'Animate',a);
+        
     case '423T45'
         tic
         solution = Solve444(R);
-        time = toc;
+        %time = toc;
         nmoves = numel(solution);
-        message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
-                   sprintf('Number of moves: %d',nmoves)};
-        set(handles.TextMessage,'String',{'Solved!';message{1};message{2}})
+
         sol2 = rub2move(solution,4);
         R = rubrot(R,sol2,'Animate',a);
+        time = toc;
+        message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
+                   sprintf('Number of moves: %d',nmoves)};
+       set(handles.TextMessage,'String',{'Solved!';message{1};message{2}})       
+       
     case 'Inverse Scramble'
         if scramble=='-'
             warndlg('Cube wasn''t scrambled. Use ''Undo'' to undo the moves.');
@@ -1377,6 +1395,14 @@ switch method
 end
  
 rubplot(R)
+
+% adding toc code - so timer stops after animation is done
+% time = toc;
+% message = {sprintf('Elapsed time: %s seconds',num2str(round(time*100)/100));...
+%            sprintf('Number of moves: %d',nmoves)};
+% set(handles.TextMessage,'String',{'Solved!';message{1};message{2}})
+
+
 ui = questdlg('Do you want to view the solution algorithm?','View solution','Yes','No','Yes');
 if strcmp(ui,'Yes')
     fname = tempname;
@@ -1543,6 +1569,9 @@ function popupmenu8_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu8 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu8
+    global diff_option;
+    contents = cellstr(get(hObject,'String'));
+    diff_option = contents{get(hObject,'Value')};
 
 
 % --- Executes during object creation, after setting all properties.
@@ -1581,8 +1610,60 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
+
+global pauseTime
+global diff_option
+% difficultySetting = digrubInitializer();
+% if strcmpi(difficultySetting,'E')
+%     pauseTime = 1;
+% elseif strcmpi(difficultySetting,'M')
+%     pauseTime = 0.75;
+% else
+%     pauseTime = 0.5;
+% end
+
 % --- Executes on button press in pushbutton37.
+global gametimestart;
 function pushbutton37_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton37 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+    %difficultySetting = digrubInitializer();
+    global diff_option
+    global pauseTime
+%     difficultySetting = diff_option
+%     if strcmpi(difficultySetting,'Expert')
+%         pauseTime = 0.0001;
+%     elseif strcmpi(difficultySetting,'Intermediate')
+%         pauseTime = 0.01;
+%     else
+%         pauseTime = 0.9; % beginner so 0.01 0.5;
+%     end
+%     pauseTime
+%     disp('push button start');
+
+    handles = guihandles(hObject);
+    % toggle
+    
+    global gametimestart;
+    if strcmpi(handles.pushbutton37.String,'Start')
+        gametimestart = tic;
+        handles.pushbutton37.String = "Click once Done!";
+        set(handles.text38, 'String',{'in progress ..'});
+        SolveButton_Callback(@SolveButton_Callback, eventdata, handles);
+        
+    else
+        % change back | stop timer
+        handles.pushbutton37.String = "Start";
+        gametimer = toc(gametimestart);
+        %num2str(round(gametimer*100)/100)
+        message = {sprintf('%s seconds',num2str(round(gametimer*100)/100))};
+        set(handles.text38,'String',{message{1}}) ;           
+    end
+
+% --- Executes on button press in pushbutton38.
+function pushbutton38_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton38 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
