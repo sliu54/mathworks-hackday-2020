@@ -1028,6 +1028,7 @@ for side = 1:6
             end
             
             hImage = image(img); axis off square
+            hImage.Parent.XDir = 'reverse';
             cont = false;
             while ~cont
                 ui = questdlg('Is this correct?','Confirm','Yes','No','Yes');
